@@ -137,3 +137,15 @@ t+292s listed=YES  shell=[3.0.2-5f2bb183]  (0s)
 - **串口 RTS 复位** → 自动进业务 ✔（实测 6 秒）
 - **cskburn 刷机后的复位** → 仍需按一次功能键 ✗（ROM 更新模式会清掉 AON 域状态）
 - **完全断电冷启动**（拔 USB）→ 仍需长按功能键 ✗（原厂设计，防误触开机）
+
+
+## 上游 3.0.3 发布（2026-10-16）
+
+- 厂商发布 **mini-v3.0.3**（`cloud.listenai.com/.../arcs_mini` 标签 `mini-v3.0.3`，2026-10-15）。
+- **官方明确：固件与版型不匹配时会提示重新烧录** ⚠️ —— 与本文件前面"刷错板型导致黑屏/USB 不识别"的实测一致，
+  刷机前务必确认目标是 `arcs_mini3`（B 版）还是 `arcs_mini`（A 版）。
+- 3.0.3 相对 3.0.2-m3 的改动很小（17 个文件）：`ap.bin` 二进制、**USB 描述符**（ADB serial 改用芯片 ID）、
+  `id_cmd`、`.agents/skills`（设备端 ADK 技能：coding/device/flash/run-log 等）。
+- **未吸收**我们的补丁（已核对：`MINIAPP_HAS_AUDIO` / `power.battery` / `audio.set_volume` / `shot` 命中数均为 0）。
+- 我们的补丁已 rebase 到 3.0.3：分支 `feat/miniapp-audio-v303`（编译通过）。
+- 资料存档：`docs/reference/fw-3.0.3-release.md`。
