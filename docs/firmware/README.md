@@ -27,10 +27,21 @@
 
 1. [conventions.md](conventions.md) —— 硬约束：板型、内存预算、分区、构建参数、代码约定
 2. [process.md](process.md) —— 流程：分支 → 构建 → 烧录 → 真机验收 → 提交 → 回滚
-3. [arcs-mini-repo.md](arcs-mini-repo.md) —— **固件仓自带手册的摘要**：仓库结构、环境、构建、烧录三模式、
+3. [architecture.md](architecture.md) —— 架构：目录地图、启动流程（SYS_INIT → main → 事件循环）、
+   `voice_msg` 消息总线主链路、调试入口、Kconfig
+4. [pitfalls.md](pitfalls.md) —— 踩坑集（10 条真机实测：SRAM 溢出、ADB_LIBUSB、冷复位、GATT 注册时机…）
+5. [arcs-mini-repo.md](arcs-mini-repo.md) —— **固件仓自带手册的摘要**：仓库结构、环境、构建、烧录三模式、
    cskburn + 开发 Boot 闭环、日志抓取、崩溃分析、提交规范、SDK 自带 skills
+6. [upstream-mirror.md](upstream-mirror.md) —— 上游镜像仓：快照式同步、剔除了什么、为什么
+   `CONFIG_MINIAPP=n`、怎么手动/Actions 同步、大推送教训
 3. [../development/flashing-and-recovery.md](../development/flashing-and-recovery.md) —— 烧录/救砖细节
 4. [../hardware/board-arcs-mini.md](../hardware/board-arcs-mini.md) —— 板级事实（引脚、外设）
+
+## 首次上手 5 步
+
+装工具链（[arcs-mini-repo.md §3](arcs-mini-repo.md#3-环境)）→ 构建（[process.md §2](process.md#2-构建每次改完都跑)）
+→ 烧录（[process.md §3](process.md#3-烧录)）→ 抓日志（[arcs-mini-repo.md §6](arcs-mini-repo.md#6-日志)）
+→ 真机验收（[process.md §4](process.md#4-真机验收)）。
 
 ## 一句话红线
 
