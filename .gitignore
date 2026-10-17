@@ -17,3 +17,6 @@ _site/
 
 # 本地草稿（未定稿的实验，不提交）
 scratch/
+
+# Cindy 会话 worktree（会话结束即删，绝不提交）
+.cindy-worktrees/
