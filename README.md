@@ -1,12 +1,16 @@
 # ling — Arcs-mini3 手册仓与模板
 
-**这个仓库不是产品代码仓，是「小程序 + 固件」两套开发的手册与模板**：规范、流程、板级事实、
-可复制的最小 demo。真正的功能开发按下面的分工在**各自仓库的分支**上进行。
+**这个仓库是 AI 开发文档仓**：小程序与固件两套开发的规范、流程、板级事实都在这里，
+同时用**分支保存小程序代码**。固件代码在镜像仓的功能分支上（本仓只提供它的文档）。
 
 | 我要开发 | 代码放哪 | 本仓提供什么 |
 |---|---|---|
-| 小程序（Lua） | **本仓的分支**（每个功能一条 `feat/*`） | 目录结构、构建/上传脚本、demo 模板、编码约定 |
-| 固件（C / LVGL） | `https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini` | 固件级规范与流程：[`docs/firmware/`](docs/firmware/README.md) |
+| 小程序（Lua） | **本仓的功能分支**（`feat/*`，从 `main` 切） | 文档 `docs/development/` + 模板/脚本/demo |
+| 固件（C / LVGL） | 镜像仓 [listenai_arcs_mini](https://github.com/Shinku-Chen/listenai_arcs_mini) 的功能分支（`feat/*`，从 `master` 切） | 文档 [`docs/firmware/`](docs/firmware/README.md) + [`docs/hardware/`](docs/hardware/README.md) |
+
+- 本仓 = **文档唯一真相源**（固件 + 小程序）。
+- 镜像仓 `master` = 上游 `arcs_mini` 快照（`tools/sync-upstream.*` 每周同步，只读）；
+  **固件功能都开分支做**，文档一律写回本仓。
 
 ## 目录
 

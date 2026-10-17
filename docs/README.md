@@ -6,8 +6,9 @@
 
 | | 小程序（Lua） | 固件（C / LVGL） |
 |---|---|---|
-| 代码在哪 | **本仓的分支**（每个功能一条 `feat/*`） | `cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini` |
+| 代码在哪 | **本仓的功能分支**（`feat/*`） | 镜像仓 `Shinku-Chen/listenai_arcs_mini` 的功能分支 |
 | 入口 | [development/miniapp-runtime.md](development/miniapp-runtime.md) → [coding-conventions](development/coding-conventions.md) → [dev-loop](development/dev-loop.md) | [firmware/README.md](firmware/README.md) → [conventions](firmware/conventions.md) → [process](firmware/process.md) |
+| 代码在哪（细节） | 本仓 `feat/*` 分支，`main` 只留 demo 模板 | 镜像仓 `feat/*` 分支；`master` = 上游快照，勿直接提交 |
 | 项目自带规则 | LingClaw SDK（模拟器 + API 文档） | [firmware/arcs-mini-repo.md](firmware/arcs-mini-repo.md)（固件仓 AGENTS.md / skills / README 摘要） |
 | 改一次的成本 | 秒级（改完全量推） | 分钟级（编译 + 烧录 + 重启） |
 | 该选谁 | 纯 UI、联网取数、可热更的业务 | 需要新硬件能力、实时性、BLE/音频链路 |

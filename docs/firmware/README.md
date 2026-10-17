@@ -4,12 +4,14 @@
 
 | 内容 | 位置 |
 |---|---|
-| 固件源码 / 分支 / 构建产物 | `https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini`（公开上游仓） |
+| 固件源码 / 功能分支 / 构建产物 | 镜像仓 **https://github.com/Shinku-Chen/listenai_arcs_mini**（从 `master` 开 `feat/*` 分支） |
+| 上游（只读） | `https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini` |
 | 固件功能文档（例如对讲机线协议） | 固件仓内的 `docs/` |
 | 小程序（Lua）开发 | 本仓 `src/` + `docs/development/` |
 
-**为什么规范放这里**：固件仓是上游 fork，`AGENTS.md` 之类面向 AI 的个人规则不该塞进去；
-本仓是个人开发规范的家，固件仓的会话可以按 `docs/firmware/*` 执行。
+**为什么规范放这里**：镜像仓每次同步都会用上游树重置工作区，个人文档放进去要靠"覆盖层每次重放"维持，
+迟早漂移；本仓是文档的家，镜像仓的 `AGENTS.md` 只有一条指针指回来。
+镜像仓 `master` 是上游快照，**固件功能一律开分支**，文档写回本仓。
 
 ## 两条线的分工
 

@@ -4,9 +4,28 @@
 > 所以有一个只做同步的镜像仓：
 > **<https://github.com/Shinku-Chen/listenai_arcs_mini>**（private）
 >
-> **分工**：镜像仓**只同步上游，不放个人文档**；规范/流程/踩坑全在本仓
-> （`docs/firmware/`、`docs/hardware/`）。镜像仓的 `AGENTS.md` 末尾只有一条指针，
-> 指向本仓这些文档。
+> **分工**：镜像仓**只同步上游 + 放固件代码分支**；规范/流程/踩坑/文档全在本仓
+> （`docs/firmware/`、`docs/hardware/`、`docs/development/`）。镜像仓的 `AGENTS.md`
+> 末尾只有一条指针，指向本仓这些文档。
+
+## 0. 固件代码在哪：镜像仓的功能分支
+
+| 分支 | 用途 | 谁写 |
+|---|---|---|
+| `master` | **上游 `arcs_mini` 的快照**，只读，由同步脚本改写 | 同步脚本（不要直接提交） |
+| `feat/<功能>` | 一个功能一条分支，从 `master` 切 | **我们自己**（固件代码就放这里） |
+
+```bash
+git clone git@github.com:Shinku-Chen/listenai_arcs_mini.git
+cd listenai_arcs_mini
+git switch -c feat/<功能> origin/master
+# …改代码，构建（-DBOARD=arcs_mini3）…
+git push -u origin feat/<功能>
+```
+
+- 文档**不要写进镜像仓**：一律写回本仓（`ling`）。
+- 同步上游后，功能分支需要 `git merge origin/master` 跟上（冲突多为 `prj.conf` / `main.c` 的接线处）。
+- 提上游 MR 时从镜像仓的分支 cherry-pick 到上游 checkout，别把镜像仓的合成历史推给上游。
 
 ## 1. 镜像仓是什么
 
@@ -16,6 +35,7 @@
 | 镜像 | `https://github.com/Shinku-Chen/listenai_arcs_mini`（private，默认分支 `master`，唯一分支） |
 | 版本 | 初始快照 `master @23fca91e`（= tag `mini-v3.0.3`），2026-10-18 |
 | 内容 | 上游完整树（**不含** `arcs-sdk/samples/`）+ 一条指向本仓的 AI 指针 |
+| 功能分支 | `feat/*`（固件代码）；`master` 永远只做上游快照 |
 
 ## 2. 快照式同步（不是逐提交镜像）
 
