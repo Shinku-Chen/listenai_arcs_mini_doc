@@ -41,8 +41,11 @@
 - 写入有 **≥10 秒** 间隔限制，用 `src/lib/store.lua` 的延迟落盘，不要每次按键就 `storage.save`。
 - 网络请求全部异步：发出请求后先画"加载中"，在 `on_http_response` 里更新；不要在 `on_start`
   里同步等结果（也没法等）。
-- 并发上限 4：用 `src/lib/net.lua` 管理 pending，发之前判额度。
-- 播报同一时刻只有 1 条：用 `src/lib/speak.lua` 做"最新一条覆盖队列"。
+- 并发上限 4：自己用一个 pending 计数管额度（参考 `examples/net-probe.lua`），发之前先判。
+- 播报同一时刻只有 1 条：同一条提示重复触发时用"最新一条覆盖"，不要排队。
+
+> 需要现成的网络/播报封装时，从历史分支 `git log --all -- src/lib/` 里捞（电台版本有 `net.lua`/`speak.lua`）；
+> 模板主分支只保留 demo 用得到的 `ui` / `input` / `store`。
 
 ## 6. 代码体积与风格
 
