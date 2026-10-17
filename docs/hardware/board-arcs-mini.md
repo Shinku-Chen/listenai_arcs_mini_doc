@@ -1,4 +1,5 @@
 > ⚠️ **先确认板型**：`arcs_mini` 与 `arcs_mini3` 是**两块不同的板**，SoC、引脚、boot/ap 镜像都不同。
+> **本文件是 `arcs_mini`（LS2684）的表；你的板子是 mini3 请看 [board-arcs-mini3.md](board-arcs-mini3.md)。**
 >
 > | 项 | `arcs_mini` | **`arcs_mini3`** |
 > |---|---|---|
@@ -10,6 +11,10 @@
 > | 外部/烧录串口 | PB02（uart2_txd） | **UART2 = PB06/PB07** |
 >
 > **刷错板型的现象是：黑屏 + USB 不识别 + 反复重启**（2026-10-02 实测，排了一整天）。
+>
+> 下方「2.1 GPIO 分配」的表来自官方 **Arcs-Mini（LS2684）** 文档，**不是 mini3 的**。
+> mini3 的完整引脚定义（含 CH32V003、USB role、LCD panel、旋转）见
+> [board-arcs-mini3.md](board-arcs-mini3.md)。
 > 本工作区当前设备是 **arcs_mini3**。
 
 # Arcs-mini（LS26）硬件事实

@@ -17,7 +17,7 @@
 | 我想…… | 读这份 |
 |---|---|
 | 知道这块板子是什么、能干什么 | [hardware/board-arcs-mini.md](hardware/board-arcs-mini.md) |
-| 查引脚、外设、内存/flash 上限 | [hardware/board-arcs-mini.md](hardware/board-arcs-mini.md) |
+| 查引脚、外设、内存/flash 上限 | [hardware/board-arcs-mini.md](hardware/board-arcs-mini.md)（mini）／[hardware/board-arcs-mini3.md](hardware/board-arcs-mini3.md)（**mini3，当前设备**） |
 | 搞清小应用能调用什么、有什么限制 | [development/miniapp-runtime.md](development/miniapp-runtime.md) |
 | 写第一份 Lua、知道代码该怎么写 | [development/coding-conventions.md](development/coding-conventions.md) |
 | 搭环境（模拟器 / adb / ling CLI） | [development/environment-setup.md](development/environment-setup.md) |

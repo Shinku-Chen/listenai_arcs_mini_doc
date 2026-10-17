@@ -15,7 +15,8 @@
 
 | 文件 | 内容 |
 |---|---|
-| [board-arcs-mini.md](board-arcs-mini.md) | LS26/Arcs-mini 的 SoC、板级规格、GPIO 分配、固件可见的内存与外设预算 |
+| [board-arcs-mini.md](board-arcs-mini.md) | **arcs_mini（LS2684）**：SoC、板级规格、GPIO 分配、固件可见的内存与外设预算 |
+| [board-arcs-mini3.md](board-arcs-mini3.md) | **arcs_mini3（LS2663，当前设备）**：完整引脚别名表、外设映射、屏幕/CH32V003/USB role/电池、改引脚流程 |
 
 ## 与本仓库的关系
 
