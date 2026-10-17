@@ -13,6 +13,7 @@
 | 了解云端下发是什么、能不能上架 | [development/cloud-distribution.md](development/cloud-distribution.md) |
 | **烧录固件 / 救砖 / 恢复出厂** | [development/flashing-and-recovery.md](development/flashing-and-recovery.md) |
 | **开发固件（规范 / 流程 / 内存与板型红线）** | [firmware/README.md](firmware/README.md) → `conventions.md`、`process.md` |
+| **固件仓自带的规则（构建/烧录/日志/skills）** | [firmware/arcs-mini-repo.md](firmware/arcs-mini-repo.md) |
 | **设备黑屏、ADB 掉线，怎么判断** | [reference/device-behavior-log.md](reference/device-behavior-log.md) |
 | 让 AI 在这个仓库里正确干活 | [../AGENTS.md](../AGENTS.md)、[development/ai-guide.md](development/ai-guide.md) |
 | 找官方原始资料 | [reference/README.md](reference/README.md) |

@@ -27,6 +27,8 @@
 
 1. [conventions.md](conventions.md) —— 硬约束：板型、内存预算、分区、构建参数、代码约定
 2. [process.md](process.md) —— 流程：分支 → 构建 → 烧录 → 真机验收 → 提交 → 回滚
+3. [arcs-mini-repo.md](arcs-mini-repo.md) —— **固件仓自带手册的摘要**：仓库结构、环境、构建、烧录三模式、
+   cskburn + 开发 Boot 闭环、日志抓取、崩溃分析、提交规范、SDK 自带 skills
 3. [../development/flashing-and-recovery.md](../development/flashing-and-recovery.md) —— 烧录/救砖细节
 4. [../hardware/board-arcs-mini.md](../hardware/board-arcs-mini.md) —— 板级事实（引脚、外设）
 
