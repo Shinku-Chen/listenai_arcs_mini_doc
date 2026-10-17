@@ -8,7 +8,7 @@
 | 我要开发 | 在哪个仓库 | 本仓的角色 |
 |---|---|---|
 | **小程序（Lua）** | **本仓的功能分支**（`feat/*`，从 `main` 切） | 提供模板、脚本、编码规范 |
-| **固件（C / LVGL / BLE）** | `https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini`（`mine` remote；`origin` 是上游） | 提供固件级规范与流程 `docs/firmware/` |
+| **固件（C / LVGL / BLE）** | `https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini` | 提供固件级规范与流程 `docs/firmware/` |
 
 - `main` 只放**模板与 demo**（当前只有一个计数器小程序），不要在 `main` 上做业务。
 - 固件功能文档（协议、时序、能力表）写在固件仓的 `docs/`；通用规范留在本仓，两边不重复。
@@ -72,7 +72,7 @@ Unverified: 还需真机/人工确认的项（例如实际按键手感、屏幕�
 ## 变更记录
 
 - 2026-10-18：仓库重新定位为**手册 + 模板仓**：`main` 只留一个计数器 demo 小程序，
-  固件源码移出本仓（迁到 `cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini` 的 `feat/intercom` 分支历史里），
+  固件源码移出本仓（迁到固件仓 `arcs_mini` 的 `feat/intercom` 分支），
   新增 `docs/firmware/` 固件级规范与流程。
 - 2026-10-02：建立仓库文档骨架与 Lua 小应用基础框架（多文件源码 + 合并/校验/上传工具），依据 LingClaw-SDK 0.1.0 与 Arcs-mini 固件 3.0.2。
 - 2026-10-02：补充烧录/恢复手册、设备行为实测记录（黑屏=休眠、ADB 掉线、sync 通道故障）。

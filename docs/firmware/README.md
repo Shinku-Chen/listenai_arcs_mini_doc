@@ -4,7 +4,7 @@
 
 | 内容 | 位置 |
 |---|---|
-| 固件源码 / 分支 / 构建产物 | `https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini`（clone 后 `origin` 指上游、`mine` 指我的 fork） |
+| 固件源码 / 分支 / 构建产物 | `https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini`（公开上游仓） |
 | 固件功能文档（例如对讲机线协议） | 固件仓内的 `docs/` |
 | 小程序（Lua）开发 | 本仓 `src/` + `docs/development/` |
 

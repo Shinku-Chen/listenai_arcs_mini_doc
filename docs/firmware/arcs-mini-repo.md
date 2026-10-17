@@ -1,6 +1,6 @@
 # 固件仓（arcs_mini）自带手册摘要
 
-> 来源：`https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini` 的 `AGENTS.md`、`README.MD`、
+> 来源：官方上游仓 `https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini` 的 `AGENTS.md`、`README.MD`、
 > `.agents/skills/*`、`res/*/partition_table.json`。
 > 摘要在 2026-10-18 校对过一次；固件仓改版后**以固件仓内的原文为准**，本文只是索引与要点。
 >
