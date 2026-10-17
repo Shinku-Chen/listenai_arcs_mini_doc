@@ -12,9 +12,9 @@
 | 官方 cskburn desktop（GUI） | 用 `.lpk` 整包刷 | 官方推荐给普通用户 |
 
 
-## 0. 先看这三条（2026-10-18 实测，Windows）
+## 0.5 三个必踩的坑（2026-10-18 实测，Windows）
 
-### 0.1 adb 看不到设备 → 加 `ADB_LIBUSB=1`
+### 0.5.1 adb 看不到设备 → 加 `ADB_LIBUSB=1`
 
 现象：`adb devices` 空，但设备管理器里 `USB\VID_0483&PID_0ADB\<chip-id>` 正常存在，
 ADB 接口（MI_00）绑的是 **inbox WinUSB**（`Service=WINUSB`，不是 Android ADB 驱动）。
@@ -28,7 +28,7 @@ adb start-server          # 后端在 server 里，起一次之后普通 adb 命
 adb devices -l            # 6d7b101a252fcaa5  device  product:arcs_mini3
 ```
 
-### 0.2 CH340 串口就是烧录口，`cskburn` 可直接救砖
+### 0.5.2 CH340 串口就是烧录口，`cskburn` 可直接救砖
 
 本机设备挂着 `USB-SERIAL CH340 (COM10)`（`VID_1A86&PID_7523`）。它**不打日志**
 （mini3 的日志在 uart0/uart1），但能进 ROM 更新模式：
@@ -47,14 +47,15 @@ cd <固件仓>
   "0x100000" resrcs-mini	one.bin `
   "0x200000" resrcs-mini\wake_word.bin `
   "0x380000" resrcs-mini\emoji.bin `
-  "0x440000" resrcs-miniespak.bin `
+  "0x440000" resrcs-mini
+espak.bin `
   "0x600000" build-303rcs-mini.bin
 ```
 
 官方 3.0.3 的 app 镜像可以从 tag `mini-v3.0.3` 原样编：`git worktree add ../arcs_mini-303 mini-v3.0.3`
 → 在该 worktree 里 `-DBOARD=arcs_mini3` 构建。烧完 `adb shell version` 应回 `3.0.3-23fca91e`。
 
-### 0.3 冷复位/断电后必须长按功能键 3 秒
+### 0.5.3 冷复位/断电后必须长按功能键 3 秒
 
 cskburn 写入完成会 `Resetting...`，这是**冷复位**：AON 里的热启动意图位没有了，
 boot 不拉 USB、屏幕也不亮——看起来像"刷砖了"，其实只差一次长按。
