@@ -2,6 +2,18 @@
 
 按"我想做什么"找文档。每份文档只有一个职责，事实不重复写第二遍。
 
+## 两条开发线
+
+| | 小程序（Lua） | 固件（C / LVGL） |
+|---|---|---|
+| 代码在哪 | **本仓的分支**（每个功能一条 `feat/*`） | `cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini` |
+| 入口 | [development/miniapp-runtime.md](development/miniapp-runtime.md) → [coding-conventions](development/coding-conventions.md) → [dev-loop](development/dev-loop.md) | [firmware/README.md](firmware/README.md) → [conventions](firmware/conventions.md) → [process](firmware/process.md) |
+| 项目自带规则 | LingClaw SDK（模拟器 + API 文档） | [firmware/arcs-mini-repo.md](firmware/arcs-mini-repo.md)（固件仓 AGENTS.md / skills / README 摘要） |
+| 改一次的成本 | 秒级（改完全量推） | 分钟级（编译 + 烧录 + 重启） |
+| 该选谁 | 纯 UI、联网取数、可热更的业务 | 需要新硬件能力、实时性、BLE/音频链路 |
+
+判断口径：**需要新增运行时能力或直连外设 → 固件；只是用现成能力 → 小程序。**
+
 | 我想…… | 读这份 |
 |---|---|
 | 知道这块板子是什么、能干什么 | [hardware/board-arcs-mini.md](hardware/board-arcs-mini.md) |

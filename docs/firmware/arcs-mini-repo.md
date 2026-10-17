@@ -149,3 +149,78 @@ skill 与仓库实际冲突时先说明原因，再按本地上下文继续。
 | SRAM 只剩十几 KB，大缓冲必须 `__psram_bss__` | [conventions.md §2](conventions.md#2-内存预算sram-已经接近满) |
 | BLE 自定义服务要在 BLE 就绪回调里注册（主任务里注册会挂） | [conventions.md §5.3](conventions.md#53-ble) |
 | 单功能键拿不到"按下/松开"边沿，要从驱动回调分发 | [conventions.md §5.4](conventions.md#54-按键) |
+
+## 11. README.MD 摘要（工程结构 / 快速开始 / FAQ）
+
+### 11.1 顶层目录职责
+
+```
+apps/        应用方案工程集合（arcs-mini = CP 业务，remote-ap = AP 算法）
+arcs-sdk/    SDK 核心（HAL / 驱动 / 组件 / 第三方库 / 板型）
+modules/     项目级第三方模块（ebus 消息、lschat 云端、lisaui）
+res/         静态资源与 partition_table.json（每个板型一份）
+src/         语音交互核心（category / framework / middleware / server / shell / system / utils）
+tools/       adb、cskburn 等工具
+build.sh / build.ps1   构建入口
+```
+
+`src/` 各层：`category`（品类差异实现，`comm` 为通用）/ `framework`（`voice_msg.*` 消息总线）/
+`middleware`（硬件抽象与系统服务）/ `server`（云端通信与唤醒）/ `shell`（调试命令）/
+`system`（`platform.c` 平台抽象、远程日志）/ `utils`。
+
+### 11.2 FLASH 分区
+
+分区表以 `res/<board>/partition_table.json` 为准（`flash_base` + `images[].addr/file`），
+不存在全局固定表。mini3 的实际地址见 [conventions.md §3](conventions.md#3-分区与烧录地址mini3)。
+
+### 11.3 两种烧录方式的定位
+
+| 方式 | 适用 | 要点 |
+|---|---|---|
+| **ADB**（推荐） | 已有 boot 且 ADB 可用 | 仓库内置 `tools/adb/`；脚本自动让设备进 recovery、等 `BOOT-*`、推固件、重启；多设备按 `transport_id` 区分 |
+| **cskburn 串口** | 首次烧录 / boot 损坏 | 需进 ROM 升级模式：**boot 引脚接地 + 复位**；boot 引脚与烧录串口复用，烧录前要悬空；连接 UART0（GPIOA2_RX0 / GPIOA3_TX0） |
+
+README 里串口示例用 `-b 3000000`；本机实测 `921600` 稳定即可（CH340/COM10），更高速率要先确认适配器可靠。
+
+### 11.4 FAQ（README 原文的四条，附本机经验）
+
+| 问题 | 原文处置 | 本机补充 |
+|---|---|---|
+| 找不到工具链 | 检查 `NUCLEI_TOOLCHAIN_PATH` / `LISTENAI_TOOLS_PATH` | 先 `env.ps1` 一次，或手工指到 `~/.listenai/{gcc,listenai-tools}` |
+| 编译失败 | `./build.sh -C` 清理重编 | `build*/` 目录删掉重建更彻底（Kconfig 缓存会残留） |
+| ADB 连不上 | 查 USB → `adb devices` → `kill-server && start-server` | **`ADB_LIBUSB=1` 起 server**（见烧录手册 §0.5.1）；`adb devices` 空但 USB 节点在就是这一条 |
+| 烧录后无法启动 | 查是否漏分区 → 看串口日志 → 重烧 boot | 冷复位要长按 3 秒；整包用 cskburn + `--verify-all` 更稳 |
+
+## 12. 启动流程摘要（`doc/EVB_RUNTIME_FLOW.md`）
+
+`arcs-evb` 与 `arcs-mini` 是同一套骨架的两份应用，流程可直接对照：
+
+1. **上电/复位** → 启动代码初始化内存 → RTOS 起来 → `SYS_INIT` 分级初始化
+   （消息系统通常在 `main()` 之前就绪，保证 `voice_msg_sub()` 可用）。
+2. **`main()`**：打印版本 → 喂狗 → 订阅关键消息 → 按序初始化 `service_*`
+   （led / volume / brightness / button / camera / display…）→（可选）`lisa_ui_init()`。
+3. **主循环**：`while (1) { boot_watchdog_feed(); vTaskDelay(100ms); }`——业务全在事件里，不在循环里。
+
+关键入口：`apps/<app>/main.c`、`src/framework/voice_msg.c`（消息总线）、
+`apps/<app>/services/service_*.c`、`apps/<app>/voice_player*`、`src/server/lschat_server/`。
+
+**运行方式是发布/订阅**：`voice_msg_pub(msg_id, data, len)` / `voice_msg_sub(msg_id, cb, user_data)`。
+主业务链：WiFi 拿到 IP → `network_probe_start()` → `VOICE_MSG_SYSTEM_NETWORK_PROBE_SUCCESS` →
+`voice_cloud_connect()` → `VOICE_MSG_CLOUD_CONNECTED` → IAT / TTS / finish 按 `VOICE_MSG_CLOUD_*` 分发；
+播放器在平台 ready 后订阅 TTS/唤醒/WiFi 断开等消息。
+
+**做固件功能时这条链路就是接线图**：新模块通常 = 初始化（`SYS_INIT` 或 `main()`）+ 订阅若干
+`VOICE_MSG_*` + 自己的 UI screen；不要往主循环里塞轮询逻辑。
+
+## 13. SDK 开发手册在哪
+
+| 来源 | 位置 | 用途 |
+|---|---|---|
+| 在线文档（推荐） | <https://docs2.listenai.com/arcs-sdk/v0.1.0/zh/html/get_started.html> | 快速开始、组件、API |
+| 仓库内中文源 | `arcs-sdk/docs/zh/`（`index.rst`、`get_started.rst`、`api_doc.md`、`hardware/`、`labs/`） | 与在线文档同源；Sphinx + Doxygen 构建，`arcs-sdk/docs/README.md` 有构建说明 |
+| SDK README | `arcs-sdk/README.md` | 版本、目录、构建方式 |
+| 模块文档 | `modules/ebus/readme.md`、`modules/lschat/README.MD` | 消息总线、云端会话 |
+| 设备侧小应用契约 | `docs/miniapp.md`（固件仓内） | 小程序能拿到什么能力（本仓摘要在 [`../development/miniapp-runtime.md`](../development/miniapp-runtime.md)） |
+| API 手册（生成） | `arcs-sdk/docs/doxygen/` | 头文件注释直接生成，查函数签名最快 |
+
+**查资料顺序**：在线文档 → `arcs-sdk/docs/zh/*.rst` → 头文件注释（`arcs-sdk/**/include`）→ 本仓手册。
