@@ -50,19 +50,33 @@ sync: upstream master @<sha> (<date>)
 好处：GitHub 上 diff 两次 sync 就能回答"上游这次改了什么"；不需要 force-push；不受上游历史体积影响。
 代价：没有上游逐提交历史与 blame（要看历史去上游仓）。
 
-## 3. 镜像里改了什么、剔除了什么
+## 3. master 与上游的差异（精确清单）
 
-| 项 | 处理 | 原因 |
+**目标：master 尽可能等于上游。** 只保留"不同做就同步不起来"的改动。当前实测差异：
+
+| 类别 | 数量 | 具体 |
 |---|---|---|
-| `arcs-sdk/samples/` | **整个剔除**（约 188 MB） | 自定义固件用不到；其中 `algo_emmc.bin` 205 MB、`fatfs_db.bin` 90 MB 超过 GitHub 单文件 100 MB 上限 |
-| `apps/arcs-mini/prj.conf` 的 `CONFIG_MINIAPP` | 同步时改写为 **`n`** | 镜像不带 `samples/subsys`（小程序 Lua 绑定源码），`y` 会编译失败；本项目是自定义固件，本就不需要小程序运行时 |
-| `AGENTS.md` 末尾 | 追加一条指针（幂等） | 告诉 AI：规范和流程在 `Shinku-Chen/listenai_arcs_mini_doc`，不要在本仓找 |
-| `tools/sync-upstream.{ps1,sh}`、`.github/workflows/sync-upstream.yml` | 镜像仓自己维护 | 同步工具本身（唯一允许的非上游文件） |
+| **删除** | 2,024 个文件 | 全部在 `arcs-sdk/samples/`（含 205 MB `algo_emmc.bin`、90 MB `fatfs_db.bin`，超 GitHub 单文件 100 MB 上限；自定义固件用不到） |
+| **修改** | 1 个文件 1 行 | `apps/arcs-mini/prj.conf`：`CONFIG_MINIAPP=n`（镜像不带 `samples/subsys`，`y` 会编译失败） |
+| **追加** | 1 个文件末尾 | `AGENTS.md`：一条指针，指向文档仓 `Shinku-Chen/listenai_arcs_mini_doc` |
+| **新增** | 4 个文件 | `.github/workflows/sync-upstream.yml`、`tools/sync-upstream.ps1`、`tools/sync-upstream.sh`、`tools/ai-docs-pointer.md`（同步工具本身） |
 
-需要被剔除的部分时**直接去上游仓取**。
+除此之外**与上游逐字节一致**（29,941 − 4 = 29,937 个上游文件原样保留）。
 
-> 想要小程序能力：从上游取回 `arcs-sdk/samples/subsys`，再把 `CONFIG_MINIAPP=y` 打开
-> （小程序侧开发规范见 [`../development/miniapp-runtime.md`](../development/miniapp-runtime.md)）。
+### 踩过的坑：`git add -A` 会漏 966 个文件
+
+上游 `arcs-sdk/.gitignore` 里有 `vendor/` 等规则，但上游对这些文件是**强制跟踪**的。
+初次建镜像时用 `git add -A` 被忽略规则挡掉，`master` 比上游少了 966 个文件
+（`arcs-sdk/modules` 743、`system` 218、`soc` 5）——已经用 `git add -f` 补回。
+
+**同步流程不受影响**：`git read-tree -u --reset` 直接把索引设成上游树，绕过 `.gitignore`。
+只有"从零建镜像"时要记得用 `git add -f`（或 `git read-tree`）而不是裸 `git add -A`。
+
+### 需要这些被剔除的内容时
+
+直接去上游仓取：`https://cloud.listenai.com/CSKG836746/arcs-sdk/public/arcs_mini` → `arcs-sdk/samples/`。
+想要小程序能力：取回 `samples/subsys`，再把 `CONFIG_MINIAPP=y` 打开
+（小程序侧规范见 [`../development/miniapp-runtime.md`](../development/miniapp-runtime.md)）。
 
 ## 4. 怎么同步
 
