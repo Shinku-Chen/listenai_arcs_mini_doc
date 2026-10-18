@@ -82,8 +82,8 @@ sync: upstream master @<sha> (<date>)
 
 ```powershell
 cd <镜像仓>
-.\tools\sync-upstream.ps1 -DryRun      # 先看会改什么
-.\tools\sync-upstream.ps1              # 拉上游 → 重建快照 → 提交 → 推送
+.\.github\scripts\sync-upstream.ps1 -DryRun      # 先看会改什么
+.\.github\scripts\sync-upstream.ps1              # 拉上游 → 重建快照 → 提交 → 推送
 ```
 
 ```bash
