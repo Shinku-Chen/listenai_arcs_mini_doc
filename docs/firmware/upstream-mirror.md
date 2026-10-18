@@ -87,7 +87,7 @@ cd <镜像仓>
 ```
 
 ```bash
-./tools/sync-upstream.sh
+./.github/scripts/sync-upstream.sh
 ```
 
 GitHub Actions 每周一 04:00 UTC 自动跑一次，也可在 Actions 页手动 `Run workflow`。
