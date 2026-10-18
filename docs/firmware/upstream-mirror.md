@@ -93,7 +93,11 @@ cd <镜像仓>
 GitHub Actions 每周一 04:00 UTC 自动跑一次，也可在 Actions 页手动 `Run workflow`。
 
 脚本行为：`git fetch --depth=1 upstream master` → 用上游树重置工作区 → 删 `arcs-sdk/samples/` →
-`CONFIG_MINIAPP=n` → 重写 `AGENTS.md` 指针 → 有变化才提交 `sync: upstream master @<short> (<date>)`。
+`CONFIG_MINIAPP=n` → **`git checkout HEAD -- .github`（自建数据整体恢复，不逐文件列举）** →
+重写 `AGENTS.md` 指针 → 有变化才提交 `sync: upstream master @<short> (<date>)`。
+
+> 用整目录恢复的副作用：如果上游**删除**了 `.github/` 下的某个文件，这里会把它恢复回来。
+> 实际很少见；真遇到时把该文件从镜像删掉并提交一次即可。
 
 ## 5. 一次大推送的教训（重建镜像时用得上）
 
