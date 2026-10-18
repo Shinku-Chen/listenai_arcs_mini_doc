@@ -135,14 +135,27 @@ adb shell "radio city 2"          # 按城市表索引查一次目录（0=自动
 ## 8. 分支与自动发布
 
 - 分支：**`feat/leo-radio`**（原 `cindy/happy-liskov`，已改名）。master 仍是上游快照。
-- 流水线：`.github/workflows/release-leo-radio.yml`，push 到该分支或手动 `Run workflow` 时：
-  缓存/安装工具链（`arcs-sdk/tools/scripts/prepare_*`）→ `bash build.sh -DBOARD=arcs_mini3`
-  → 收集 app.bin / lpk / ota.txz / combined.hex → 上传 artifact → 创建 Release
-  （tag 形如 `leo-radio-20261018-81bcdc5`，自动标记 latest；同一 commit 重跑会先删旧 release）。
-- CI 两个坑（都已修）：`env.sh` 在 Actions 的 `bash -e` 下会**静默退出**（改成直接调
-  `prepare_toolchain.sh` / `prepare_listenai_tools.sh` 并把路径写进 `GITHUB_ENV`）；
-  仓库里的 `build.sh` 是 **644**（`./build.sh` 报 Permission denied / exit 126），必须 `bash build.sh`。
-- Release 正文在 `.github/release-notes-leo-radio.md`（刷哪个文件、板型红线、交互、OTA 关系）。
+- **流水线本体在 master**：`.github/workflows/release-firmware.yml`，`workflow_call` 可复用，
+  也可 `workflow_dispatch` 手动选分支/板型。放 master 的 `.github/` 是因为每周上游同步会
+  `git checkout HEAD -- .github`，这一层是唯一能长期存活、供所有分支复用的位置。
+- **功能分支只留一个瘦 caller**：`.github/workflows/release-leo-radio.yml`（十几个 with 参数），
+  换新功能固件时复制它改 `board` / `app_dir` / `build_name` / `notes_file` 即可。
+- **打 tag 自动发版**：
+
+  ```bash
+  git switch feat/leo-radio && git pull
+  git tag -a leo-radio-v3.0.4 -m "LEO 网络电台 3.0.4"
+  git push origin leo-radio-v3.0.4
+  ```
+
+  → `release-leo-radio`（tag `leo-radio-*` 触发）→ 调用 master 的 `release-firmware`
+  → 构建 + 打包 → 创建 Release（tag 名即 release tag，自动 `--latest`）。
+- 产物：`*-app.bin`（cskburn `0x600000`）、`*-full.lpk`（整包）、`*.ota.txz`、`*.combined.hex`。
+- CI 坑（都已修）：`env.sh` 在 Actions 的 `bash -e` 下**静默退出**（改直接调
+  `prepare_toolchain.sh` / `prepare_listenai_tools.sh` 并写 `GITHUB_ENV`）；仓库里
+  `build.sh` 是 **644**，必须 `bash build.sh`；产物名带板型后缀（`arcs-mini3.*`），
+  收集时要用 glob 兜住而不是写死 `arcs-mini-v*`。
+- Release 正文在 `.github/release-notes-leo-radio.md`（刷哪个文件、板型红线、交互、发版步骤）。
 
 ## 9. OTA 与自定义固件的关系
 
