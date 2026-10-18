@@ -32,7 +32,7 @@ ARCS-MINI 语音助手固件（ListenAI ARCS SoC，RISC-V **AP/CP 双核**）：
 
 - 上游主分支按其 `AGENTS.md` 是 **`arcs-mini/main`**（不是 `main`）；PR / diff 基准以它为准。
 - 本 fork（`mine` remote）实际用 `master` 作上游基线，功能一律开 `feat/*`：
-  `feat/radio-standalone`（固件主线）、`feat/intercom`（对讲机）、`pr/*`（拟提上游的小补丁）。
+  `feat/leo-radio`（网络电台功能固件主线，带自动 Release）、`feat/intercom`（对讲机）、`pr/*`（拟提上游的小补丁）。
   提交前用 `git branch -vv` 确认基线，别假设分支名。
 
 ## 3. 环境

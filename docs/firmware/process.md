@@ -11,7 +11,7 @@ git fetch --all --prune
 git switch -c feat/<feature>    # 语义分支，别在 feat/* 或 master 上叠活
 ```
 
-- 基线：默认从 `feat/radio-standalone`（当前固件主线）或 `master`（上游原样）切。
+- 基线：默认从 `feat/leo-radio`（网络电台功能固件主线）或 `master`（上游原样）切。
 - 一个分支一件事；混入无关修复会让真机验收无法二分。
 
 ## 1. 设计（先写下来）

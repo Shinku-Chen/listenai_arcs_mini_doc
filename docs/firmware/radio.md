@@ -132,7 +132,19 @@ adb shell "radio city 2"          # 按城市表索引查一次目录（0=自动
   即**不进 IDLE/HIBERNATE**（屏幕不自动熄），这是当前版本与 leo-radio 的差异，
   长时间开着的烧屏风险未处理。
 
-## 8. OTA 与自定义固件的关系
+## 8. 分支与自动发布
+
+- 分支：**`feat/leo-radio`**（原 `cindy/happy-liskov`，已改名）。master 仍是上游快照。
+- 流水线：`.github/workflows/release-leo-radio.yml`，push 到该分支或手动 `Run workflow` 时：
+  缓存/安装工具链（`arcs-sdk/tools/scripts/prepare_*`）→ `bash build.sh -DBOARD=arcs_mini3`
+  → 收集 app.bin / lpk / ota.txz / combined.hex → 上传 artifact → 创建 Release
+  （tag 形如 `leo-radio-20261018-81bcdc5`，自动标记 latest；同一 commit 重跑会先删旧 release）。
+- CI 两个坑（都已修）：`env.sh` 在 Actions 的 `bash -e` 下会**静默退出**（改成直接调
+  `prepare_toolchain.sh` / `prepare_listenai_tools.sh` 并把路径写进 `GITHUB_ENV`）；
+  仓库里的 `build.sh` 是 **644**（`./build.sh` 报 Permission denied / exit 126），必须 `bash build.sh`。
+- Release 正文在 `.github/release-notes-leo-radio.md`（刷哪个文件、板型红线、交互、OTA 关系）。
+
+## 9. OTA 与自定义固件的关系
 
 - **官方 app OTA 会把 app 分区（`0x600000`）整块替换**，网络电台等自建功能随之消失。
   本固件已经在 `prj.conf` 打开 `CONFIG_OTA_DISABLE_APP_UPDATE=y`，app 升级不再检查。
@@ -146,7 +158,7 @@ adb shell "radio city 2"          # 按城市表索引查一次目录（0=自动
 - **电台页必须给这些页面让位**：闹钟响铃、OTA 确认页、小应用、日志上传
   （OTA 确认页 `portMAX_DELAY` 等按键，被顶掉会把流程卡死）。
 
-## 9. 已知限制
+## 10. 已知限制
 
 - 直播流不支持 seek / 时长，`COMPLETED` 事件按"断流"处理（重连，不切台）。
 - 断线自动重连：单台连续失败 3 次自动换下一台（公共目录死链很多）。
