@@ -155,3 +155,52 @@ $text = [regex]::Replace($text, '(?m)^CONFIG_MINIAPP=.*$', 'CONFIG_MINIAPP=n')
 - `.rej` 里的都是一两行的接线（`CMakeLists` / `Kconfig` / `main.c` / `prj.conf`），
   照着重放即可；上游文件结构可能与原分支不同（例如上游 `apps/arcs-mini` 没有 `radio_ui`），
   锚点要按上游实际内容找。
+
+## 13. LVGL 新页面不能用 `lv_scr_load` 切成独立 screen
+
+**现象**：电台页（`apps/arcs-mini/radio/radio_ui.c` 初版）退出后，界面冻住，
+`adb shell` 也一起没反应（`adb devices` 还是 `device`，但任何命令都超时）。
+
+**根因**：`lisa_ui_nav_scr_nav_default()` 的顺序是 **pop → pause → close → 再 resume 目标页**。
+如果页面是独立 LVGL screen（`lv_scr_load` 切过去的），`close` 里 `lv_obj_del(s_scr)`
+删掉的正是 **当前活动屏幕**，LVGL 的 `act_scr` 变成 NULL，渲染循环随后崩/卡死。
+
+**对照**：内置页面（home / info / ota / quota）都不切 screen，而是
+`view_create(lv_scr_act())` 建**子对象**，用 `LV_OBJ_FLAG_HIDDEN` 切显隐。
+新页面照这个做，`close` 里删自己的子对象就安全了。
+
+## 14. 播放器自己 stop 会释放焦点，把状态机锁死
+
+**现象**：电台能进、能播，换台一次后停在 `STOPPED` 再也不恢复，而且日志狂刷
+到把控制台拖死（`adb shell` 无响应）。
+
+**根因**：焦点回调里把 `NONE/BACKGROUND` 一律当成"被别的播放器抢占"，
+于是 `app_player_stop()`（换台、暂停、退页都会调）→ 释放焦点 → 焦点回调把
+`s_focus=false` → 起播条件 `wanted && net_ok && focus` 永远不成立。
+
+**处置**：焦点回调里先看 `by_which`——**指向自己时直接忽略**（这是自己的
+stop/pause 引起的）。另外给起播加最小间隔（2 s），任何异常状态都不会变成忙循环
+刷日志。教训：**给一个可能被清空的状态加"必须为真"的门槛，要先确认清空它的
+路径不会由自己触发。**
+
+## 15. ADB recovery 的 `push` 收尾报 EOF，用 cskburn 串口才是稳的
+
+**现象**：`adb push <app.bin> /RAW/NAND/600000` 打印
+`1 file pushed ... 3136012 bytes`，但紧接着 `adb: error: failed to read copy response: EOF`，
+之后设备变成 `BOOT-xxxx offline`，任何 adb 命令超时；**必须物理长按才能恢复**。
+
+**结论**：走的是 recovery 的大文件 `sync` 通道，与本仓早期记录一致（"小命令通、
+大传输断"）。反复重试只会反复把设备打进 offline。
+
+**处置**：直接走串口兜底，速度稳定且回读可校验（约 60 s 写完 3 MB）：
+
+```powershell
+.\tools\cskburn\cskburn.exe -C arcs -s COM10 -b 921600 --verify-all `
+  0x600000 build-radio\arcs-mini.bin
+```
+
+- `md5 (0x00600000-0x008FDxxx): ...` 打印出来的就是**回读摘要**，与本地
+  `md5sum build-radio/arcs-mini.bin` 逐字节比对即可确认写入正确。
+- 写完是**冷复位**，仍要**长按功能键 3 s** 开机。
+- 本机串口是 `USB-SERIAL CH340 (COM10)`；它与 ADB 是两条独立通道，
+  ADB 卡死时它照常可用（`cskburn -C arcs -s COM10 -b 921600 -c` 只探测）。
