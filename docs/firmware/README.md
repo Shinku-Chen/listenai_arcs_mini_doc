@@ -37,8 +37,8 @@
    cskburn + 开发 Boot 闭环、日志抓取、崩溃分析、提交规范、SDK 自带 skills
 6. [upstream-mirror.md](upstream-mirror.md) —— 上游镜像仓：快照式同步、剔除了什么、为什么
    `CONFIG_MINIAPP=n`、怎么手动/Actions 同步、大推送教训
-7. [radio.md](radio.md) —— **网络电台功能契约**：台单来源、单键交互表、接线点、
-   音频焦点策略、`radio` 调试命令、已知限制
+7. [radio.md](radio.md) —— **网络电台功能契约**：台单来源与元信息、单键交互表、接线点、
+   音频焦点策略、界面约定（含“限宽标签必须给 20px 高”）、`radio` 调试命令、已知限制
 3. [../development/flashing-and-recovery.md](../development/flashing-and-recovery.md) —— 烧录/救砖细节
 4. [../hardware/board-arcs-mini.md](../hardware/board-arcs-mini.md) —— 板级事实（引脚、外设）
 
