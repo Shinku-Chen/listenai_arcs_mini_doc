@@ -59,9 +59,22 @@ sync: upstream master @<sha> (<date>)
 | **删除** | 2,024 个文件 | 全部在 `arcs-sdk/samples/`（含 205 MB `algo_emmc.bin`、90 MB `fatfs_db.bin`，超 GitHub 单文件 100 MB 上限；自定义固件用不到） |
 | **修改** | 1 个文件 1 行 | `apps/arcs-mini/prj.conf`：`CONFIG_MINIAPP=n`（镜像不带 `samples/subsys`，`y` 会编译失败） |
 | **追加** | 1 个文件末尾 | `AGENTS.md`：一条指针，指向文档仓 `Shinku-Chen/listenai_arcs_mini_doc` |
-| **新增** | 4 个文件，全在 `.github/` 下 | `.github/workflows/sync-upstream.yml`、`.github/scripts/sync-upstream.ps1`、`.github/scripts/sync-upstream.sh`、`.github/ai-docs-pointer.md`（本仓自建数据一律收在这里，`tools/` 保持上游原样） |
+| **新增** | 5 个文件，全在 `.github/` 下 | `.github/workflows/sync-upstream.yml`、`.github/workflows/release-firmware.yml`（通用打包/Release 流水线，各 `feat/*` 分支用 `workflow_call` 复用）、`.github/scripts/sync-upstream.ps1`、`.github/scripts/sync-upstream.sh`、`.github/ai-docs-pointer.md`（本仓自建数据一律收在这里，`tools/` 保持上游原样） |
 
 除此之外**与上游逐字节一致**（29,941 − 4 = 29,937 个上游文件原样保留）。
+
+**铁律：`master` 只放上游树 + `.github/` 覆盖层，功能代码永远不进 master。**
+
+- 自己写的功能（网络电台、对讲机…）只存在于对应的 `feat/<功能>` 分支，**不要 merge / PR 到 master**。
+- 唯一允许进 master 的自建内容就是 `.github/`（同步脚本本来就靠 `git checkout HEAD -- .github`
+  恢复它，`sync-upstream.yml` 也在里面）。CI 流水线放这里才能被所有分支 `workflow_call` 复用；
+  放到功能分支就变成"每个分支一份副本"，必然漂移。
+- 校验方式（应只看到 `.github/` 的差异、且 `radio` 目录为 0）：
+
+  ```bash
+  git diff --stat <上一个 sync 提交>..origin/master     # 只应有 .github/**
+  git ls-tree -r --name-only origin/master | grep -c "apps/arcs-mini/radio"   # 应为 0
+  ```
 
 ### 踩过的坑：`git add -A` 会漏 966 个文件
 
