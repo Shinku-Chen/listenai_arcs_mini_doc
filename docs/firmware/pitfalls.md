@@ -115,3 +115,43 @@ cskburn 烧完立刻开串口，可能抓到空文件或乱码——串口还没
 
 空闲 30 s 降亮度、5 min hibernate（`home_enter_hibernate` 会挂起 USB 与 LVGL），
 表现就是黑屏 + ADB 不应答 + 无日志。一次按键即可唤醒；跑小应用时固件会抑制休眠。
+
+## 11. 用 PowerShell 改 `prj.conf` 会把文件转成 GBK
+
+**现象**：镜像仓 `master` 建好后 `cmake` 直接失败：
+
+```text
+Malformed utf-8 in 'apps/arcs-mini/prj.conf'
+Problematic data: b'ç½'
+kconfiglib.KconfigError  → Kconfig parse failed
+```
+
+**原因**：`prj.conf` 是 **UTF-8（含中文注释）**。用 PowerShell 的
+`Set-Content` / `Out-File` / `>` 写入时，5.1 默认按**系统 ANSI（zh-CN = GBK）**编码落盘，
+中文注释变成非法 UTF-8，kconfiglib 直接拒绝解析。
+
+**处置**：改这个文件必须按字节读写：
+
+```powershell
+$enc  = New-Object System.Text.UTF8Encoding($false)
+$text = $enc.GetString([System.IO.File]::ReadAllBytes($prj))
+$text = [regex]::Replace($text, '(?m)^CONFIG_MINIAPP=.*$', 'CONFIG_MINIAPP=n')
+[System.IO.File]::WriteAllText($prj, $text, $enc)
+```
+
+或者用 `sed -i`（bash，字节安全）、Python 的 `read_bytes/write_bytes`。
+**凡是带中文注释的 `.conf` / `.c` / `.h`，都不要用 PowerShell 的文本管道去写。**
+
+**连带教训**：脚本化改配置文件时，先确认目标文件编码，再选写入方式；
+自动化流程（同步脚本）尤其要复核，否则每次跑都重新破坏一次。
+
+## 12. 镜像仓没有上游提交历史 → 补丁要用 `git apply --reject` 手工接
+
+镜像 `master` 是**合成快照**（一个 sync 提交一棵树），没有上游逐提交历史。
+把别的分支的功能移植过来时：
+
+- `git apply -3` **一定失败**（报 `repository lacks the necessary blob to perform 3-way merge`）；
+- 用 `git apply --reject`：新文件与能匹配的 hunk 会自动落地，冲突文件留下 `.rej`；
+- `.rej` 里的都是一两行的接线（`CMakeLists` / `Kconfig` / `main.c` / `prj.conf`），
+  照着重放即可；上游文件结构可能与原分支不同（例如上游 `apps/arcs-mini` 没有 `radio_ui`），
+  锚点要按上游实际内容找。
