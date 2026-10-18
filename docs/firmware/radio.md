@@ -132,7 +132,21 @@ adb shell "radio city 2"          # 按城市表索引查一次目录（0=自动
   即**不进 IDLE/HIBERNATE**（屏幕不自动熄），这是当前版本与 leo-radio 的差异，
   长时间开着的烧屏风险未处理。
 
-## 8. 已知限制
+## 8. OTA 与自定义固件的关系
+
+- **官方 app OTA 会把 app 分区（`0x600000`）整块替换**，网络电台等自建功能随之消失。
+  本固件已经在 `prj.conf` 打开 `CONFIG_OTA_DISABLE_APP_UPDATE=y`，app 升级不再检查。
+- 资源包 OTA（`tone` / `wake_word` / `emoji`）走独立分区，app 不动，可以继续收。
+- KV 分区（`0xF00000`）不被任何 OTA 触碰，`radio.station` / `radio.city` / 音量都在；
+  重新刷回带电台的固件后设置自动恢复。
+- 想长期维护电台版本：用构建产物 `build/<board>/arcs-mini3-v<ver>.ota.txz`
+  发布到自己的产品下，云端下发的就是带电台的包。
+- 临时恢复自动升级：`adb shell kv set int user.disable_app_update 0`（KV 优先级低于
+  `CONFIG_OTA_DISABLE_APP_UPDATE`，编了 `=y` 时 KV 无效）。
+- **电台页必须给这些页面让位**：闹钟响铃、OTA 确认页、小应用、日志上传
+  （OTA 确认页 `portMAX_DELAY` 等按键，被顶掉会把流程卡死）。
+
+## 9. 已知限制
 
 - 直播流不支持 seek / 时长，`COMPLETED` 事件按"断流"处理（重连，不切台）。
 - 断线自动重连：单台连续失败 3 次自动换下一台（公共目录死链很多）。
