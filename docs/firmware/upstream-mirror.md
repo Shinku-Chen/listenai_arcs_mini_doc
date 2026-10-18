@@ -59,7 +59,7 @@ sync: upstream master @<sha> (<date>)
 | **删除** | 2,024 个文件 | 全部在 `arcs-sdk/samples/`（含 205 MB `algo_emmc.bin`、90 MB `fatfs_db.bin`，超 GitHub 单文件 100 MB 上限；自定义固件用不到） |
 | **修改** | 1 个文件 1 行 | `apps/arcs-mini/prj.conf`：`CONFIG_MINIAPP=n`（镜像不带 `samples/subsys`，`y` 会编译失败） |
 | **追加** | 1 个文件末尾 | `AGENTS.md`：一条指针，指向文档仓 `Shinku-Chen/listenai_arcs_mini_doc` |
-| **新增** | 4 个文件 | `.github/workflows/sync-upstream.yml`、`tools/sync-upstream.ps1`、`tools/sync-upstream.sh`、`tools/ai-docs-pointer.md`（同步工具本身） |
+| **新增** | 4 个文件，全在 `.github/` 下 | `.github/workflows/sync-upstream.yml`、`.github/scripts/sync-upstream.ps1`、`.github/scripts/sync-upstream.sh`、`.github/ai-docs-pointer.md`（本仓自建数据一律收在这里，`tools/` 保持上游原样） |
 
 除此之外**与上游逐字节一致**（29,941 − 4 = 29,937 个上游文件原样保留）。
 
