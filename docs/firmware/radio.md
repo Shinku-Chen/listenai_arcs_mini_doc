@@ -23,28 +23,32 @@
 | 持久化 | KV：`radio.station`（上次收听的台名）、`radio.city`（城市索引） |
 | 开机行为 | `CONFIG_RADIO_AUTO_START`（默认 `y`）：开机 3 s 后自动进电台页并开播；**没保存过 WiFi 的设备不抢主页**（见 §6） |
 
-## 2. 交互（单物理键）
+## 2. 它是一台纯收音机（不是助手）
 
-设备只有一颗电源键，既有手势里 **四击**是空着的，电台用它做唯一入口。
+固件里 **AI 助手整条链路已移除**：唤醒词（ACOMP）、云端会话（LS_CHAT）、TTS、MCP 工具、
+小程序、相机、TF 卡音乐同步都不参与构建，助手页面（主页/二维码/设置/闹钟）通过
+`CONFIG_APPLICATION_UI_ASSISTANT=n` 整目录不编译，电台页是导航栈的默认页（= 整个 UI）。
 
-| 手势 | 电台页外 | 播放页 | 设置菜单 | 台单/城市 | 音量 |
-|---|---|---|---|---|---|
-| 单击 | 助手原行为 | 换下一台 | 下移选中 | 下移选中 | 音量 +5（到顶回 10） |
-| 双击 | 助手原行为 | 播放/暂停 | 确认 | 选台并播放 / 按城市查询 | 返回菜单 |
-| 三击 | 助手原行为 | **退出电台** | 回播放页 | 回播放页 | 回菜单 |
-| 长按 | 关机 | **进设置菜单** | 回播放页 | 回播放页 | 回菜单 |
-| 四击 | **进电台** | **退出电台** | 退出电台 | 退出电台 | 退出电台 |
-| 五/六/七击 | BLE 配网 | 先退出电台，再配网 | 同左 | 同左 | 同左 |
-| 连击 8+ | 恢复出厂 | 吞掉（防误触） | 吞掉 | 吞掉 | 吞掉 |
+保留：WiFi、**BLE 配网**（`platform.c` 的 SYS_INIT 里 `lisa_bluetooth_init` +
+`app_ble_netcfg_init` 原样不动）、显示/亮度、按键、音量、音频平台（app_player）、电池。
 
-要点：
+实测收益（`-DBOARD=arcs_mini3`）：FLASH 3,137,044 → 2,575,088 B（37.4% → 30.7%）；
+SRAM 169,472 → 146,976 B（98.5% → 85.4%）。
 
-- 电台页在前台时**吞掉 `LONG_HOLD`**，否则"长按=关机"会在设置时直接关机。
-- 五/六/七击**放行**给既有 BLE 配网：配网流程一行没改，只负责先把电台页关掉，
-  避免两套页面叠在一起。无网时的提示行会写"等待网络"，用户按五六七击即可配网。
-- 拦截点在 `apps/arcs-mini/button/app_button.c` 的 `app_button_on_changed`，
-  必须放在 `app_button_redirect_to_cloud_info()` **之前**（否则三击会被云异常
-  重定向抢走）。
+### 按键
+
+| 手势 | 播放页 | 设置菜单 | 台单/城市 | 音量 |
+|---|---|---|---|---|
+| 单击 | 换下一台 | 下移选中 | 下移选中 | 音量 +5 |
+| 双击 | 播放/暂停 | 确认 | 选台/按城市查询 | 返回菜单 |
+| 三击 | 无（根页面） | 回播放页 | 回播放页 | 回菜单 |
+| **四击** | **进设置菜单** | 回播放页 | 回播放页 | 回播放页 |
+| **长按** | **关机**（系统语义） | 回播放页 | 回播放页 | 回菜单 |
+| 五/六/七击 | 进 **BLE 配网** | 同左 | 同左 | 同左 |
+| 连击 8+ | 忽略 | 忽略 | 忽略 | 忽略 |
+
+按键由 `radio_app.c` 自己订阅 `VOICE_MSG_BUTTON_CHANGE` 处理（`apps/arcs-mini/button/`
+那套助手按键语义不再参与构建）。
 
 ## 3. 接线点
 
@@ -52,7 +56,7 @@
 |---|---|
 | `apps/arcs-mini/CMakeLists.txt` | `add_subdirectory(radio)`（`CONFIG_RADIO` 门控）+ 头路径 |
 | `apps/arcs-mini/Kconfig` | `rsource "radio/Kconfig"`，开关默认 `n`，`prj.conf` 里显式 `=y` |
-| `apps/arcs-mini/main.c` | `lisa_ui_init()` 之后调 `radio_app_init()` |
+| `apps/arcs-mini/main.c` | 只 init 音量/亮度/按键/电池 + LVGL，然后 `radio_app_init()`（页面设为默认页） |
 | `apps/arcs-mini/button/app_button.c` | 按键拦截（见上） |
 | `src/category/comm/voice_player_comm.c` | 新增 `radio` 焦点通道 + `app_player_create("radio")` + 音量线程 & `voice_player_is_audio_active()` 纳入统计 |
 
