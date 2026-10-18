@@ -1,6 +1,6 @@
 # AGENTS.md — AI 编程助手入口
 
-本仓库（`github.com/Shinku-Chen/ling`）是 **AI 开发文档仓**：固件与小程序的规范、流程、板级事实都写在这里，
+本仓库（`github.com/Shinku-Chen/listenai_arcs_mini_doc`）是 **AI 开发文档仓**：固件与小程序的规范、流程、板级事实都写在这里，
 另外用**分支保存小程序代码**。固件代码不在这里，在镜像仓的功能分支上。
 先读本文件，再按「任务路由」读对应文档。
 

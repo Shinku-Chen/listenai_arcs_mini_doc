@@ -56,7 +56,7 @@ sync: upstream master @<sha> (<date>)
 |---|---|---|
 | `arcs-sdk/samples/` | **整个剔除**（约 188 MB） | 自定义固件用不到；其中 `algo_emmc.bin` 205 MB、`fatfs_db.bin` 90 MB 超过 GitHub 单文件 100 MB 上限 |
 | `apps/arcs-mini/prj.conf` 的 `CONFIG_MINIAPP` | 同步时改写为 **`n`** | 镜像不带 `samples/subsys`（小程序 Lua 绑定源码），`y` 会编译失败；本项目是自定义固件，本就不需要小程序运行时 |
-| `AGENTS.md` 末尾 | 追加一条指针（幂等） | 告诉 AI：规范和流程在 `Shinku-Chen/ling`，不要在本仓找 |
+| `AGENTS.md` 末尾 | 追加一条指针（幂等） | 告诉 AI：规范和流程在 `Shinku-Chen/listenai_arcs_mini_doc`，不要在本仓找 |
 | `tools/sync-upstream.{ps1,sh}`、`.github/workflows/sync-upstream.yml` | 镜像仓自己维护 | 同步工具本身（唯一允许的非上游文件） |
 
 需要被剔除的部分时**直接去上游仓取**。
@@ -99,6 +99,6 @@ git revert <sync 提交>            # 或在镜像仓 git reset --hard <上一�
 ## 7. 文档为什么放在本仓而不是镜像仓
 
 - 镜像仓每次同步都会用上游树重置工作区，任何个人文档都要靠"覆盖层 + 每次重放"维持，容易漂移；
-- 本仓（ling）是手册仓，`docs/firmware/`、`docs/hardware/`、`docs/development/` 是唯一真相源，
+- 文档仓（`listenai_arcs_mini_doc`）是唯一真相源，`docs/firmware/`、`docs/hardware/`、`docs/development/` 都在那边，
   镜像仓的 `AGENTS.md` 只有一条指针指回来；
 - 这样也避免两份规范各写一半、最后互相矛盾。
